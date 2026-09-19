@@ -2,12 +2,8 @@
 
 ## Identificação
 
-- Aluno: [PREENCHER]
-- RM: [PREENCHER]
-- Turma: [PREENCHER]
-- Disciplina: Projeto Integrador
 - Projeto: Minha Biblioteca Musical
-- Repositório: [OPCIONAL - INSERIR LINK]
+- Repositório: [https://github.com/gustavomf1/biblioteca-mobile]
 
 ## Nome do projeto
 

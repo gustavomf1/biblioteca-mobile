@@ -23,6 +23,6 @@ Declaro que revisei o conteúdo produzido, compreendo o funcionamento do código
 
 ## Assinatura
 
-- Nome: [PREENCHER]
-- Data: [PREENCHER]
-- Assinatura: ______________________________________________
+- Nome: Gustavo Martins Franca
+- Data: 19/09/2026
+- Assinatura: Gustavo Martins Franca
