@@ -2,11 +2,10 @@
 
 ## Identificação
 
-- Aluno: [PREENCHER]
-- RM: [PREENCHER]
-- Turma: [PREENCHER]
+- Aluno: Gustavo Martins Franca
+- Turma: Sistemas de informacao - 4 ano
 - Projeto: Minha Biblioteca Musical
-- Disciplina: Projeto Integrador
+- Disciplina: Programacao Mobile
 
 ## Declaração
 
