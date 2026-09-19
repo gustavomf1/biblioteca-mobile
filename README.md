@@ -37,4 +37,4 @@ src/
 App.tsx
 ```
 
-A documentação da entrega está em [docs/Checkpoint-01.md](docs/Documentacao.md) e o termo de uso de IA está em [docs/Termo-de-Uso-de-IA-Generativa.md](docs/Termo-de-Uso-de-IA-Generativa.md).
+A documentação da entrega está em [docs/Documentacao](docs/Documentacao.md) e o termo de uso de IA está em [docs/Termo-de-Uso-de-IA-Generativa.md](docs/Termo-de-Uso-de-IA-Generativa.md).
