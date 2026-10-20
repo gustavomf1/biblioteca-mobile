@@ -170,7 +170,9 @@ A falha de comunicação é identificada quando o `fetch` lança exceção; o er
 
 ## Capturas de tela
 
-> Inserir aqui as capturas de: lista com dados, lista vazia, carregando e erro (ver `docs/images/`).
+| Lista com dados | Cadastrar música | Detalhes da música |
+| --- | --- | --- |
+| ![Lista](images/tela-lista.jpeg) | ![Cadastro](images/tela-cadastro.jpeg) | ![Detalhe](images/tela-detalhe.jpeg) |
 
 ## Tecnologias e conceitos
 
