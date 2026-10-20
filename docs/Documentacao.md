@@ -1,66 +1,163 @@
-# Documentação do Checkpoint 01
+# Documentação do Checkpoint 02
 
 ## Identificação
 
 - Projeto: Minha Biblioteca Musical
+- Disciplina: Programação Mobile
 - Repositório: [https://github.com/gustavomf1/biblioteca-mobile]
+- Web API utilizada: `backend-music` (Java 17, Spring Boot, PostgreSQL), desenvolvida pelo próprio aluno.
 
-## Nome do projeto
+## 1. Evolução do projeto
 
-Minha Biblioteca Musical.
+### O que existia no Checkpoint 01
 
-## Objetivo da aplicação
+- Aplicação com tela única controlada por `useState` (`telaAtual`), com menu inferior próprio.
+- Listagem, cadastro e exclusão de músicas **apenas em memória** (dados locais, perdidos ao fechar o app).
+- Componentes `Botao`, `CardMusica` e `MenuNavegacao`.
 
-O objetivo da aplicação é permitir que o usuário organize uma biblioteca pessoal de músicas. O usuário pode visualizar as músicas cadastradas, adicionar novas músicas com título, artista, álbum e ano de lançamento, e excluir itens da lista.
+### O que foi implementado no Checkpoint 02
 
-## Funcionalidades previstas para o projeto completo
+- Navegação com **React Navigation** (Stack Navigator).
+- Integração com a Web API REST usando `fetch`, `async/await` e `GET`.
+- Conversão do JSON da API para o model `Musica`.
+- Estados de carregamento, lista vazia e erros (falha de comunicação e erro do servidor).
+- Tela de detalhes que consulta a API por `id`.
+- Separação entre telas/componentes visuais (`screens`, `components`) e comunicação com a API (`services`).
 
-- Integração com o backend desenvolvido em Spring Boot.
-- Armazenamento das músicas em banco de dados PostgreSQL.
-- Cadastro, consulta, edição e exclusão de músicas.
-- Busca de músicas por título ou artista.
-- Filtros e organização da biblioteca.
-- Tratamento de carregamento e erros da API.
+### Funcionalidades alteradas
 
-## Funcionalidades implementadas no Checkpoint 01
+| Checkpoint 01 | Checkpoint 02 |
+| --- | --- |
+| Lista vinda de um array local | Lista vinda da API (`GET /api/songs`) |
+| Menu inferior com estado `telaAtual` | Stack Navigator com parâmetros de rota |
+| Cadastro e exclusão locais | Removidos desta etapa: o enunciado pede apenas consulta (GET); cadastro e exclusão voltarão com `POST`/`DELETE` |
+| Botão "Excluir" no card | Botão "Detalhes" no card |
 
-- Tela de biblioteca com listagem das músicas.
-- Tela de cadastro de uma nova música.
-- Tela com informações sobre o projeto.
-- Cadastro local de título, artista, álbum e ano de lançamento.
-- Validação dos campos do formulário.
-- Exclusão de músicas cadastradas.
-- Contador de músicas da biblioteca.
-- Navegação simples entre as telas principais.
-- Componentes próprios com comunicação por propriedades.
-- Gerenciamento de dados e telas com `useState`.
-- Estilização e organização da interface com Flexbox.
+## 2. Navegação
 
-## Organização do código
+### Telas
 
-O arquivo `App.tsx` controla os estados da aplicação e a renderização das telas. A pasta `src/components` contém os componentes reutilizáveis `Botao`, `CardMusica` e `MenuNavegacao`. A pasta `src/models` contém a interface TypeScript `Musica`.
+| Tela | Rota | Descrição |
+| --- | --- | --- |
+| `BibliotecaScreen` | `Biblioteca` | Lista as músicas vindas da API (tela inicial) |
+| `DetalheScreen` | `Detalhe` | Mostra os dados de uma música, buscada na API |
+| `ProjetoScreen` | `Projeto` | Informações sobre o projeto |
 
-## Dificuldades encontradas
+### Fluxo
 
-As principais dificuldades foram organizar os estados do formulário, validar os dados digitados e atualizar a lista de músicas sem alterar diretamente o estado. Também foi necessário organizar os componentes e os estilos para que a interface se adapte ao espaço disponível.
+```text
+Biblioteca ──(botão "Detalhes" do card)──▶ Detalhe
+    │
+    └────(botão "Sobre o projeto")──────▶ Projeto
+```
 
-## Tecnologias e conceitos utilizados
+O botão voltar do cabeçalho (ou `navigation.goBack()`) retorna à tela anterior.
 
-- React Native com Expo.
-- TypeScript.
-- Componentes básicos: `View`, `Text`, `TextInput`, `Pressable`, `FlatList` e `ScrollView`.
-- Componentes próprios e propriedades.
-- Estado com `useState`.
-- `StyleSheet` e Flexbox.
+### Transferência de dados entre telas
+
+Os parâmetros são tipados em `src/navigation/types.ts`:
+
+```ts
+export type RootStackParamList = {
+  Biblioteca: undefined;
+  Detalhe: { id: number };
+  Projeto: undefined;
+};
+```
+
+A `BibliotecaScreen` envia apenas o `id`: `navigation.navigate('Detalhe', { id })`. A `DetalheScreen` lê `route.params.id` e consulta a API (`GET /api/songs/{id}`), garantindo que mostre o dado atual do servidor.
+
+## 3. Integração com a Web API
+
+- **Endereço base:** `http://<host>:8080/api`, definido em `src/services/api.ts`.
+  - Web / iOS: `localhost`.
+  - Emulador Android: `10.0.2.2`.
+  - Celular físico: IP do computador na rede local.
+- **Recurso/entidade:** `songs` (música).
+
+### Endpoints consumidos
+
+| Método | Endpoint | Uso no app | Sucesso |
+| --- | --- | --- | --- |
+| GET | `/api/songs` | Listar músicas (`BibliotecaScreen`) | `200` + array JSON |
+| GET | `/api/songs/{id}` | Detalhar música (`DetalheScreen`) | `200` + objeto JSON |
+
+### Formato dos dados recebidos
+
+```json
+{
+  "id": 1,
+  "title": "Oceano",
+  "artist": "Djavan",
+  "album": "Djavan",
+  "releaseYear": 1989
+}
+```
+
+A função `converter` em `src/services/musicaService.ts` transforma esse JSON no model `Musica` (`titulo`, `artista`, `album`, `anoLancamento`).
+
+### Formato de erro do servidor
+
+```json
+{
+  "timestamp": "2026-10-20T12:00:00Z",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Song not found",
+  "details": []
+}
+```
+
+O app exibe o campo `message`.
+
+### Organização do código
+
+```text
+src/
+  components/   Botao, CardMusica, MensagemEstado   (visual)
+  screens/      BibliotecaScreen, DetalheScreen, ProjetoScreen
+  navigation/   types.ts
+  services/     api.ts, musicaService.ts            (comunicação com a API)
+  models/       Musica.ts
+```
+
+## 4. Tratamento de estado
+
+Cada tela que consulta a API usa três estados com `useState`:
+
+| Estado | Função |
+| --- | --- |
+| `musicas` / `musica` | Armazena os dados convertidos recebidos da API |
+| `carregando` | `true` enquanto aguarda a resposta |
+| `erro` | Mensagem a exibir quando a requisição falha |
+
+A função `carregar()` (`async/await`) liga `carregando`, limpa `erro`, chama o serviço dentro de `try/catch/finally` e desliga `carregando` ao final. Ela é chamada em um `useEffect` quando a tela abre (e na `DetalheScreen`, quando o `id` muda) e também pelos botões "Tentar novamente" / "Atualizar".
+
+### Cenários tratados
+
+| Cenário | Como aparece para o usuário |
+| --- | --- |
+| API disponível com dados | Lista de cards e contador |
+| API disponível sem registros | "Nenhuma música cadastrada" com botão "Atualizar" |
+| Aguardando resposta | Indicador de carregamento e "Carregando músicas..." |
+| Falha na comunicação | "Não foi possível carregar" + "Não foi possível conectar ao servidor. Verifique sua conexão." + botão "Tentar novamente" |
+| Erro enviado pelo servidor | "Não foi possível carregar" + mensagem (`message`) devolvida pela API + botão "Tentar novamente" |
+
+A falha de comunicação é identificada quando o `fetch` lança exceção; o erro do servidor, quando `response.ok` é `false`. Ambos viram um `ErroApi` com `tipo` `rede` ou `servidor`.
+
+## Como executar
+
+1. Subir o banco e a API: `docker compose up -d` e `mvn spring-boot:run` (pasta `backend-music`).
+2. No app: `npm install` e `npm start`.
+3. Ajustar o `HOST` em `src/services/api.ts` se usar celular físico.
 
 ## Capturas de tela
 
-### Tela de biblioteca
+> Inserir aqui as capturas de: lista com dados, lista vazia, carregando e erro (ver `docs/images/`).
 
-![Tela de biblioteca do aplicativo](images/checkpoint-mobile.png)
+## Tecnologias e conceitos
 
-### Tela de biblioteca no navegador
-
-![Tela de biblioteca no navegador](images/checkpoint-desktop.png)
-
-As telas de cadastro e de projeto podem ser capturadas pelo aluno no Expo Go antes da entrega, caso o professor solicite imagens adicionais.
+- React Native com Expo e TypeScript.
+- React Navigation (native stack).
+- `fetch`, `async/await`, `useState`, `useEffect`.
+- `FlatList`, `ActivityIndicator`, `Pressable`, `StyleSheet` e Flexbox.

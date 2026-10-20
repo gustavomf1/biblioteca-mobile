@@ -9,19 +9,19 @@
 
 ## Declaração
 
-Declaro que utilizei uma ferramenta de Inteligência Artificial Generativa como apoio durante o desenvolvimento do Checkpoint 01.
+Declaro que utilizei uma ferramenta de Inteligência Artificial Generativa como apoio durante o desenvolvimento do Checkpoint 02.
 
-A ferramenta foi utilizada para auxiliar na organização inicial do projeto React Native, na criação de componentes, na aplicação de estilos e na elaboração da documentação. O projeto desenvolvido utiliza os conceitos estudados em sala, incluindo TypeScript, componentes, propriedades, estado com `useState`, componentes básicos do React Native, estilos e Flexbox.
+A ferramenta foi utilizada para auxiliar na adaptação do projeto para o Checkpoint 02: organização da navegação, criação da camada de comunicação com a Web API, tratamento de carregamento e erros e elaboração da documentação. O projeto desenvolvido utiliza os conceitos estudados em sala, incluindo TypeScript, componentes, propriedades, estado com `useState`, navegação entre telas, `useEffect`, `async/await`, componentes básicos do React Native, estilos e Flexbox.
 
 Declaro que revisei o conteúdo produzido, compreendo o funcionamento do código entregue e assumo a responsabilidade pelo resultado final apresentado.
 
 ## Ferramenta utilizada
 
-- Ferramenta: ChatGPT / Codex, da OpenAI
+- Ferramenta: Claude Code, da Anthropic
 - Finalidade: apoio ao desenvolvimento e à documentação
 
 ## Assinatura
 
 - Nome: Gustavo Martins Franca
-- Data: 19/09/2026
+- Data: 20/10/2026
 - Assinatura: Gustavo Martins Franca
