@@ -1,26 +1,38 @@
-import { useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { Botao } from '../components/Botao';
 import { CardMusica } from '../components/CardMusica';
+import { MensagemEstado } from '../components/MensagemEstado';
 import type { Musica } from '../models/Musica';
 import type { RootStackParamList } from '../navigation/types';
+import { listarMusicas } from '../services/musicaService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Biblioteca'>;
 
 export function BibliotecaScreen({ navigation }: Props) {
-  // Temporário: dados locais até a integração com a API (Etapa 3).
-  const [musicas] = useState<Musica[]>([
-    { id: 1, titulo: 'Oceano', artista: 'Djavan', album: 'Djavan', anoLancamento: 1989 },
-    {
-      id: 2,
-      titulo: 'Velha Infância',
-      artista: 'Tribalistas',
-      album: 'Tribalistas',
-      anoLancamento: 2002,
-    },
-  ]);
+  const [musicas, setMusicas] = useState<Musica[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState('');
+
+  async function carregar() {
+    setCarregando(true);
+    setErro('');
+
+    try {
+      const dados = await listarMusicas();
+      setMusicas(dados);
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : 'Erro inesperado.');
+    } finally {
+      setCarregando(false);
+    }
+  }
+
+  useEffect(() => {
+    carregar();
+  }, []);
 
   return (
     <View style={styles.tela}>
@@ -34,19 +46,43 @@ export function BibliotecaScreen({ navigation }: Props) {
         </View>
       </View>
 
-      <FlatList
-        contentContainerStyle={styles.lista}
-        data={musicas}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <CardMusica
-            musica={item}
-            onPress={(id) => navigation.navigate('Detalhe', { id })}
-          />
-        )}
-        ItemSeparatorComponent={() => <View style={styles.separador} />}
-        showsVerticalScrollIndicator={false}
-      />
+      {carregando ? (
+        <View style={styles.carregando}>
+          <ActivityIndicator size="large" color="#187D68" />
+          <Text style={styles.textoCarregando}>Carregando músicas...</Text>
+        </View>
+      ) : erro ? (
+        <MensagemEstado
+          erro
+          titulo="Não foi possível carregar"
+          texto={erro}
+          tituloBotao="Tentar novamente"
+          onPress={carregar}
+        />
+      ) : (
+        <FlatList
+          contentContainerStyle={styles.lista}
+          data={musicas}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <CardMusica
+              musica={item}
+              onPress={(id) => navigation.navigate('Detalhe', { id })}
+            />
+          )}
+          ItemSeparatorComponent={() => <View style={styles.separador} />}
+          ListEmptyComponent={
+            <MensagemEstado
+              titulo="Nenhuma música cadastrada"
+              texto="A biblioteca está vazia no servidor."
+              tituloBotao="Atualizar"
+              onPress={carregar}
+            />
+          }
+          showsVerticalScrollIndicator={false}
+        />
+
+      )}
 
       <Botao titulo="Sobre o projeto" onPress={() => navigation.navigate('Projeto')} />
     </View>
@@ -93,6 +129,16 @@ const styles = StyleSheet.create({
   lista: {
     flexGrow: 1,
     paddingBottom: 12,
+  },
+  carregando: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  textoCarregando: {
+    color: '#68768A',
+    fontSize: 14,
   },
   separador: {
     height: 12,
