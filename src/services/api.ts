@@ -2,8 +2,8 @@ import { Platform } from 'react-native';
 
 // No emulador Android, localhost aponta para o próprio emulador;
 // 10.0.2.2 é o endereço do computador que roda o backend.
-// Em celular físico, defina a variável EXPO_PUBLIC_API_URL com o IP do computador, ex.:
-// EXPO_PUBLIC_API_URL=http://192.168.0.10:8080/api npm start
+// Em celular físico, defina EXPO_PUBLIC_API_URL no arquivo .env (veja .env.example)
+// com o IP do computador, ex.: EXPO_PUBLIC_API_URL=http://192.168.0.10:8080/api
 const HOST = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
 
 export const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? `http://${HOST}:8080/api`;

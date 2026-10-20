@@ -6,3 +6,6 @@ web-build/
 .DS_Store
 .superpowers/
 docs/superpowers/
+
+# Configuração local
+.env

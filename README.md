@@ -4,7 +4,7 @@ Projeto desenvolvido em React Native com TypeScript para o Checkpoint 02 de Proj
 
 ## Como executar
 
-0. Suba o backend (`backend-music`) e, em celular físico, inicie com `EXPO_PUBLIC_API_URL=http://<IP-do-PC>:8080/api npm start`.
+0. Suba o backend (`backend-music`) e, em celular físico, copie `.env.example` para `.env` e ajuste o IP do computador (`EXPO_PUBLIC_API_URL`).
 
 1. Instale as dependências:
 

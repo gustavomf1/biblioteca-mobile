@@ -80,7 +80,7 @@ A `BibliotecaScreen` envia apenas o `id`: `navigation.navigate('Detalhe', { id }
 - **Endereço base:** `http://<host>:8080/api`, definido em `src/services/api.ts`.
   - Web / iOS (simulador): `localhost`.
   - Emulador Android: `10.0.2.2`.
-  - Celular físico: definir `EXPO_PUBLIC_API_URL` com o IP do computador, ex.: `EXPO_PUBLIC_API_URL=http://192.168.0.10:8080/api npm start`.
+  - Celular físico: definir `EXPO_PUBLIC_API_URL` no arquivo `.env` (modelo em `.env.example`) com o IP do computador, ex.: `EXPO_PUBLIC_API_URL=http://192.168.0.10:8080/api`.
 - **Recurso/entidade:** `songs` (música).
 
 ### Endpoints consumidos
@@ -166,7 +166,7 @@ A falha de comunicação é identificada quando o `fetch` lança exceção; o er
 
 1. Subir o banco e a API: `docker compose up -d` e `mvn spring-boot:run` (pasta `backend-music`).
 2. No app: `npm install` e `npm start`.
-3. Em celular físico, iniciar com `EXPO_PUBLIC_API_URL=http://<IP-do-PC>:8080/api npm start`.
+3. Em celular físico, copiar `.env.example` para `.env` e ajustar o IP do computador.
 
 ## Capturas de tela
 
