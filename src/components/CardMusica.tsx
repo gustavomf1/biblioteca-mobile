@@ -4,10 +4,10 @@ import type { Musica } from '../models/Musica';
 
 interface CardMusicaProps {
   musica: Musica;
-  onDelete: (id: number) => void;
+  onPress: (id: number) => void;
 }
 
-export function CardMusica({ musica, onDelete }: CardMusicaProps) {
+export function CardMusica({ musica, onPress }: CardMusicaProps) {
   return (
     <View style={styles.card}>
       <View style={styles.informacoes}>
@@ -19,11 +19,11 @@ export function CardMusica({ musica, onDelete }: CardMusicaProps) {
       </View>
 
       <Pressable
-        accessibilityLabel={`Excluir ${musica.titulo}`}
-        onPress={() => onDelete(musica.id)}
-        style={({ pressed }) => [styles.excluir, pressed && styles.pressionado]}
+        accessibilityLabel={`Ver detalhes de ${musica.titulo}`}
+        onPress={() => onPress(musica.id)}
+        style={({ pressed }) => [styles.detalhesBotao, pressed && styles.pressionado]}
       >
-        <Text style={styles.textoExcluir}>Excluir</Text>
+        <Text style={styles.textoDetalhes}>Detalhes</Text>
       </Pressable>
     </View>
   );
@@ -59,19 +59,19 @@ const styles = StyleSheet.create({
     color: '#68768A',
     fontSize: 14,
   },
-  excluir: {
+  detalhesBotao: {
     minHeight: 42,
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#C94B4B',
+    borderColor: '#187D68',
     borderRadius: 6,
     paddingHorizontal: 12,
   },
   pressionado: {
     opacity: 0.65,
   },
-  textoExcluir: {
-    color: '#A73535',
+  textoDetalhes: {
+    color: '#126452',
     fontSize: 14,
     fontWeight: '700',
   },
