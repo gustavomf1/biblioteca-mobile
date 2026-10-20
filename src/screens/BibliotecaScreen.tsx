@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { Botao } from '../components/Botao';
@@ -30,9 +31,12 @@ export function BibliotecaScreen({ navigation }: Props) {
     }
   }
 
-  useEffect(() => {
-    carregar();
-  }, []);
+  // Recarrega sempre que a tela ganha foco (abertura e retorno do Cadastro)
+  useFocusEffect(
+    useCallback(() => {
+      carregar();
+    }, []),
+  );
 
   return (
     <View style={styles.tela}>
@@ -84,6 +88,7 @@ export function BibliotecaScreen({ navigation }: Props) {
 
       )}
 
+      <Botao titulo="Cadastrar música" onPress={() => navigation.navigate('Cadastro')} />
       <Botao titulo="Sobre o projeto" onPress={() => navigation.navigate('Projeto')} />
     </View>
   );

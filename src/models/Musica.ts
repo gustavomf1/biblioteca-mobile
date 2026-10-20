@@ -5,3 +5,5 @@ export interface Musica {
   album: string;
   anoLancamento: number;
 }
+
+export type NovaMusica = Omit<Musica, 'id'>;

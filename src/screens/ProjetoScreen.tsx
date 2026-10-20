@@ -9,12 +9,12 @@ export function ProjetoScreen() {
       </Text>
 
       <Text style={styles.topico}>Checkpoint 01</Text>
-      <Text style={styles.item}>Cadastro, listagem e exclusão locais</Text>
+      <Text style={styles.item}>Cadastro, listagem e exclusão locais (em memória)</Text>
       <Text style={styles.item}>Navegação simples entre as telas principais</Text>
 
       <Text style={styles.topico}>Checkpoint 02</Text>
       <Text style={styles.item}>Navegação com React Navigation (stack)</Text>
-      <Text style={styles.item}>Integração com a Web API (GET)</Text>
+      <Text style={styles.item}>Integração com a Web API (GET e POST)</Text>
       <Text style={styles.item}>Tratamento de carregamento, lista vazia e erros</Text>
     </ScrollView>
   );

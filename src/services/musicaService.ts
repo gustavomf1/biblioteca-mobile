@@ -1,5 +1,5 @@
-import type { Musica } from '../models/Musica';
-import { get } from './api';
+import type { Musica, NovaMusica } from '../models/Musica';
+import { get, post } from './api';
 
 // Formato do JSON retornado pela API (SongResponse)
 interface SongResponse {
@@ -27,5 +27,15 @@ export async function listarMusicas(): Promise<Musica[]> {
 
 export async function buscarMusica(id: number): Promise<Musica> {
   const song = await get<SongResponse>(`/songs/${id}`);
+  return converter(song);
+}
+
+export async function criarMusica(nova: NovaMusica): Promise<Musica> {
+  const song = await post<SongResponse>('/songs', {
+    title: nova.titulo,
+    artist: nova.artista,
+    album: nova.album,
+    releaseYear: nova.anoLancamento,
+  });
   return converter(song);
 }

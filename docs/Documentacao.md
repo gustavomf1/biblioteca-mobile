@@ -18,7 +18,8 @@
 ### O que foi implementado no Checkpoint 02
 
 - Navegação com **React Navigation** (Stack Navigator).
-- Integração com a Web API REST usando `fetch`, `async/await` e `GET`.
+- Integração com a Web API REST usando `fetch`, `async/await`, `GET` (consulta) e `POST` (cadastro).
+- Tela de cadastro que envia a nova música para a API e atualiza a lista ao voltar.
 - Conversão do JSON da API para o model `Musica`.
 - Estados de carregamento, lista vazia e erros (falha de comunicação e erro do servidor).
 - Tela de detalhes que consulta a API por `id`.
@@ -30,7 +31,8 @@
 | --- | --- |
 | Lista vinda de um array local | Lista vinda da API (`GET /api/songs`) |
 | Menu inferior com estado `telaAtual` | Stack Navigator com parâmetros de rota |
-| Cadastro e exclusão locais | Removidos desta etapa: o enunciado pede apenas consulta (GET); cadastro e exclusão voltarão com `POST`/`DELETE` |
+| Cadastro local (array em memória) | Cadastro enviado à API (`POST /api/songs`), com validação e tratamento de erros |
+| Exclusão local | Removida desta etapa; voltará com `DELETE` |
 | Botão "Excluir" no card | Botão "Detalhes" no card |
 
 ## 2. Navegação
@@ -40,6 +42,7 @@
 | Tela | Rota | Descrição |
 | --- | --- | --- |
 | `BibliotecaScreen` | `Biblioteca` | Lista as músicas vindas da API (tela inicial) |
+| `CadastroScreen` | `Cadastro` | Formulário que envia uma nova música para a API |
 | `DetalheScreen` | `Detalhe` | Mostra os dados de uma música, buscada na API |
 | `ProjetoScreen` | `Projeto` | Informações sobre o projeto |
 
@@ -47,6 +50,8 @@
 
 ```text
 Biblioteca ──(botão "Detalhes" do card)──▶ Detalhe
+    │
+    ├────(botão "Cadastrar música")────▶ Cadastro ──(salvou)──▶ volta para Biblioteca (recarrega)
     │
     └────(botão "Sobre o projeto")──────▶ Projeto
 ```
@@ -60,19 +65,22 @@ Os parâmetros são tipados em `src/navigation/types.ts`:
 ```ts
 export type RootStackParamList = {
   Biblioteca: undefined;
+  Cadastro: undefined;
   Detalhe: { id: number };
   Projeto: undefined;
 };
 ```
+
+Ao salvar uma música, a `CadastroScreen` chama `navigation.goBack()`; a `BibliotecaScreen` usa `useFocusEffect` para recarregar a lista da API sempre que volta a ter foco, mostrando o novo registro.
 
 A `BibliotecaScreen` envia apenas o `id`: `navigation.navigate('Detalhe', { id })`. A `DetalheScreen` lê `route.params.id` e consulta a API (`GET /api/songs/{id}`), garantindo que mostre o dado atual do servidor.
 
 ## 3. Integração com a Web API
 
 - **Endereço base:** `http://<host>:8080/api`, definido em `src/services/api.ts`.
-  - Web / iOS: `localhost`.
+  - Web / iOS (simulador): `localhost`.
   - Emulador Android: `10.0.2.2`.
-  - Celular físico: IP do computador na rede local.
+  - Celular físico: definir `EXPO_PUBLIC_API_URL` com o IP do computador, ex.: `EXPO_PUBLIC_API_URL=http://192.168.0.10:8080/api npm start`.
 - **Recurso/entidade:** `songs` (música).
 
 ### Endpoints consumidos
@@ -81,6 +89,7 @@ A `BibliotecaScreen` envia apenas o `id`: `navigation.navigate('Detalhe', { id }
 | --- | --- | --- | --- |
 | GET | `/api/songs` | Listar músicas (`BibliotecaScreen`) | `200` + array JSON |
 | GET | `/api/songs/{id}` | Detalhar música (`DetalheScreen`) | `200` + objeto JSON |
+| POST | `/api/songs` | Cadastrar música (`CadastroScreen`) | `201` + objeto JSON criado |
 
 ### Formato dos dados recebidos
 
@@ -96,6 +105,12 @@ A `BibliotecaScreen` envia apenas o `id`: `navigation.navigate('Detalhe', { id }
 
 A função `converter` em `src/services/musicaService.ts` transforma esse JSON no model `Musica` (`titulo`, `artista`, `album`, `anoLancamento`).
 
+Corpo enviado no `POST` (`Content-Type: application/json`), sem `id`:
+
+```json
+{ "title": "Oceano", "artist": "Djavan", "album": "Djavan", "releaseYear": 1989 }
+```
+
 ### Formato de erro do servidor
 
 ```json
@@ -108,14 +123,14 @@ A função `converter` em `src/services/musicaService.ts` transforma esse JSON n
 }
 ```
 
-O app exibe o campo `message`.
+O app exibe o campo `message` e, quando houver, os itens de `details` (ex.: `title: title is required` em um `400` de validação).
 
 ### Organização do código
 
 ```text
 src/
   components/   Botao, CardMusica, MensagemEstado   (visual)
-  screens/      BibliotecaScreen, DetalheScreen, ProjetoScreen
+  screens/      BibliotecaScreen, CadastroScreen, DetalheScreen, ProjetoScreen
   navigation/   types.ts
   services/     api.ts, musicaService.ts            (comunicação com a API)
   models/       Musica.ts
@@ -131,7 +146,9 @@ Cada tela que consulta a API usa três estados com `useState`:
 | `carregando` | `true` enquanto aguarda a resposta |
 | `erro` | Mensagem a exibir quando a requisição falha |
 
-A função `carregar()` (`async/await`) liga `carregando`, limpa `erro`, chama o serviço dentro de `try/catch/finally` e desliga `carregando` ao final. Ela é chamada em um `useEffect` quando a tela abre (e na `DetalheScreen`, quando o `id` muda) e também pelos botões "Tentar novamente" / "Atualizar".
+Na `CadastroScreen`, o estado `enviando` bloqueia envios repetidos e troca o texto do botão para "Salvando..."; os erros de validação local e os erros da API aparecem no estado `erro`.
+
+A função `carregar()` (`async/await`) liga `carregando`, limpa `erro`, chama o serviço dentro de `try/catch/finally` e desliga `carregando` ao final. Ela é chamada quando a tela abre: na `DetalheScreen` por um `useEffect` (refeito se o `id` mudar) e na `BibliotecaScreen` por `useFocusEffect`, que também roda ao voltar do cadastro, e também pelos botões "Tentar novamente" / "Atualizar".
 
 ### Cenários tratados
 
@@ -149,7 +166,7 @@ A falha de comunicação é identificada quando o `fetch` lança exceção; o er
 
 1. Subir o banco e a API: `docker compose up -d` e `mvn spring-boot:run` (pasta `backend-music`).
 2. No app: `npm install` e `npm start`.
-3. Ajustar o `HOST` em `src/services/api.ts` se usar celular físico.
+3. Em celular físico, iniciar com `EXPO_PUBLIC_API_URL=http://<IP-do-PC>:8080/api npm start`.
 
 ## Capturas de tela
 
@@ -159,5 +176,5 @@ A falha de comunicação é identificada quando o `fetch` lança exceção; o er
 
 - React Native com Expo e TypeScript.
 - React Navigation (native stack).
-- `fetch`, `async/await`, `useState`, `useEffect`.
+- `fetch`, `async/await`, `useState`, `useEffect`, `useFocusEffect`.
 - `FlatList`, `ActivityIndicator`, `Pressable`, `StyleSheet` e Flexbox.

@@ -1,10 +1,10 @@
 # Minha Biblioteca Musical
 
-Projeto desenvolvido em React Native com TypeScript para o Checkpoint 02 de Projeto Integrador. O aplicativo consome a Web API do `backend-music` (`GET /api/songs`).
+Projeto desenvolvido em React Native com TypeScript para o Checkpoint 02 de Projeto Integrador. O aplicativo consome a Web API do `backend-music` (`GET` e `POST /api/songs`).
 
 ## Como executar
 
-0. Suba o backend (`backend-music`) e, em celular físico, ajuste o `HOST` em `src/services/api.ts`.
+0. Suba o backend (`backend-music`) e, em celular físico, inicie com `EXPO_PUBLIC_API_URL=http://<IP-do-PC>:8080/api npm start`.
 
 1. Instale as dependências:
 
@@ -31,7 +31,7 @@ npm run web
 ```text
 src/
   components/   Botao, CardMusica, MensagemEstado
-  screens/      BibliotecaScreen, DetalheScreen, ProjetoScreen
+  screens/      BibliotecaScreen, CadastroScreen, DetalheScreen, ProjetoScreen
   navigation/   types.ts
   services/     api.ts, musicaService.ts
   models/       Musica.ts

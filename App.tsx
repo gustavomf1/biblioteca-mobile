@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import type { RootStackParamList } from './src/navigation/types';
 import { BibliotecaScreen } from './src/screens/BibliotecaScreen';
+import { CadastroScreen } from './src/screens/CadastroScreen';
 import { DetalheScreen } from './src/screens/DetalheScreen';
 import { ProjetoScreen } from './src/screens/ProjetoScreen';
 
@@ -18,6 +19,11 @@ export default function App() {
           name="Biblioteca"
           component={BibliotecaScreen}
           options={{ title: 'Minha Biblioteca Musical' }}
+        />
+        <Stack.Screen
+          name="Cadastro"
+          component={CadastroScreen}
+          options={{ title: 'Cadastrar música' }}
         />
         <Stack.Screen
           name="Detalhe"
